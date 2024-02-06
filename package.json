@@ -4,6 +4,8 @@
   "description": "",
   "main": "main.ts",
   "scripts": {
+    "start": "ts-node-dev --respawn --no-notify src/main.ts",
+    "build": "tsc",
     "eslint": "eslint \"src/**/*.ts\"",
     "eslint:fix": "eslint \"src/**/*.ts\" --fix",
     "prettier": "prettier \"src/**/*.{ts,js}\" --check",
@@ -20,7 +22,8 @@
   },
   "homepage": "https://github.com/ashtotakoe/crud-api#readme",
   "dependencies": {
-    "ts-node": "^10.9.2",
+    "@types/node": "^20.11.16",
+    "typescript": "^5.3.3",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
