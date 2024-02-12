@@ -5,7 +5,7 @@ import { DB } from '../db/data-base'
 import { SimpleResponse } from '../shared/interfaces/simple-response.interface'
 import { HTTPMethods } from '../shared/types/http-methods.type'
 import { convertToRouteData } from '../shared/utils/convert-to-route-data.util'
-import { createSimpleResponse } from '../shared/utils/create-simple-response'
+import { createSimpleResponse } from '../shared/utils/create-simple-response.util'
 import { writeToResponse } from '../shared/utils/write-to-response.util'
 import { Router } from './router/router'
 

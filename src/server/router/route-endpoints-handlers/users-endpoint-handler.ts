@@ -1,18 +1,12 @@
 import pathUtils from 'node:path'
 
+import { failedResponses } from '../../../shared/constants/failed-responses.constant'
+import { EndpointHandler } from '../../../shared/types/endpoint-handler.type'
+import { HTTPMethodHandlers } from '../../../shared/types/http-method-handlers.type'
 import { createUser } from '../../../shared/user-factory'
-import { createSimpleResponse } from '../../../shared/utils/create-simple-response'
+import { createSimpleResponse } from '../../../shared/utils/create-simple-response.util'
 import { extractUserDataFromBody } from '../../../shared/utils/extract-user-data-from-body.util'
 import { validateUUID } from '../../../shared/utils/validate-uuid.util'
-import { EndpointHandler } from '../../types/endpoint-handler.type'
-import { HTTPMethodHandlers } from '../../types/http-method-handlers.type'
-
-const invalidBodyResponse = createSimpleResponse({
-  status: 400,
-  body: 'Body is not valid. Please, provide all required properties',
-})
-const invalidIdResponse = createSimpleResponse({ status: 400, body: 'ID is not valid' })
-const userDosNotExistResponse = createSimpleResponse({ status: 404, body: 'User does not exist' })
 
 const methodHandlers: HTTPMethodHandlers = {
   users: {
@@ -25,11 +19,11 @@ const methodHandlers: HTTPMethodHandlers = {
     POST: (routeData, db) => {
       const { body } = routeData
 
-      if (!body) return invalidBodyResponse
+      if (!body) return failedResponses.invalidBodyResponse
 
       const userData = extractUserDataFromBody(body)
 
-      if (!userData) return invalidBodyResponse
+      if (!userData) return failedResponses.invalidBodyResponse
 
       const user = createUser(userData)
       db.setUser(user)
@@ -44,34 +38,34 @@ const methodHandlers: HTTPMethodHandlers = {
       if (validateUUID(id)) {
         const user = db.getUser(id)
 
-        return user ? createSimpleResponse({ body: JSON.stringify(user) }) : userDosNotExistResponse
+        return user ? createSimpleResponse({ body: JSON.stringify(user) }) : failedResponses.userDosNotExistResponse
       }
 
-      return invalidIdResponse
+      return failedResponses.invalidIdResponse
     },
 
     PUT: ({ path, body }, db) => {
       const id = pathUtils.basename(path)
 
       if (validateUUID(id)) {
-        if (!body) return invalidBodyResponse
+        if (!body) return failedResponses.invalidBodyResponse
 
         const userData = extractUserDataFromBody(body)
-        if (!userData) return invalidBodyResponse
+        if (!userData) return failedResponses.invalidBodyResponse
 
         const updatedUser = db.updateUser(id, userData)
         if (updatedUser) return createSimpleResponse({ status: 200, body: JSON.stringify(updatedUser) })
 
-        return userDosNotExistResponse
+        return failedResponses.userDosNotExistResponse
       }
 
-      return invalidIdResponse
+      return failedResponses.invalidIdResponse
     },
 
     DELETE: ({ path }, db) => {
       const id = pathUtils.basename(path)
       if (!validateUUID(id)) {
-        return invalidIdResponse
+        return failedResponses.invalidIdResponse
       }
 
       const targetUser = db.getUser(id)
@@ -80,7 +74,7 @@ const methodHandlers: HTTPMethodHandlers = {
         return createSimpleResponse({ status: 204 })
       }
 
-      return userDosNotExistResponse
+      return failedResponses.userDosNotExistResponse
     },
   },
 }

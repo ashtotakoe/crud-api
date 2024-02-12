@@ -1,7 +1,7 @@
 import { ROUTE_PATH_SEPARATOR } from '../../shared/constants/route-path-separator'
-import { RouteSegments } from '../enums/route-segments.enum'
-import { Route } from '../interfaces/route.interface'
-import { EndpointHandler } from '../types/endpoint-handler.type'
+import { RouteSegments } from '../../shared/enums/route-segments.enum'
+import { Route } from '../../shared/interfaces/route.interface'
+import { EndpointHandler } from '../../shared/types/endpoint-handler.type'
 import { routes } from './routes'
 
 export class Router {
