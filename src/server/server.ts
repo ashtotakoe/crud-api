@@ -4,6 +4,7 @@ import url from 'node:url'
 import { DB } from '../db/data-base'
 import { HTTPMethods } from '../shared/types/http-methods.type'
 import { convertToRouteData } from '../shared/utils/convert-to-route-data.util'
+import { syncSimpleResponseWithRes } from '../shared/utils/sync-simple-reponse-with-res.util'
 import { Router } from './router/router'
 
 export class Server {
@@ -32,9 +33,15 @@ export class Server {
 
       const methodHandler = endPointHandler(routeData)
 
-      console.log(routeData)
-      methodHandler ? console.log(methodHandler(routeData, this.db)) : console.log('no method handler found')
-      res.end()
+      if (methodHandler) {
+        const responseData = methodHandler(routeData, this.db)
+        syncSimpleResponseWithRes(responseData, res)
+
+        res.end()
+        return
+      }
+
+      res.end('no method handler was found')
     })
   }
   constructor({ port, db }: { port: number; db: DB }) {

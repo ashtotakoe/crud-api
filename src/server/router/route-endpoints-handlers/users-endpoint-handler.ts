@@ -1,12 +1,17 @@
 import path from 'path'
 
+import { convertToSimpleResponse } from '../../../shared/utils/convert-to-simple-response'
 import { EndpointHandler } from '../../types/endpoint-handler.type'
 import { HTTPMethodHandlers } from '../../types/http-method-handlers.type'
 
 const methodHandlers: HTTPMethodHandlers = {
   users: {
-    GET: () => 'hello from get handler',
-    POST: () => 'hello from post handler',
+    GET: (_, db) => {
+      const users = db.getAllUsers()
+
+      return convertToSimpleResponse({ body: JSON.stringify(users) })
+    },
+  // POST: () => 'hello from post handler',
   },
 }
 

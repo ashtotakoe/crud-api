@@ -7,6 +7,11 @@ export class DB {
     this.users = {}
   }
 
+  getAllUsers(): User[] {
+    const users = Object.keys(this.users).map(key => this.users[key])
+    return !users.some(user => user !== undefined) ? (users as User[]) : []
+  }
+
   getUser(key: string): User | null {
     return this.users[key] ?? null
   }
