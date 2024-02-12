@@ -1,4 +1,5 @@
 import { User } from '../shared/interfaces/user.interface'
+import { UserWithoutID } from '../shared/types/user-without-id.type'
 
 export class DB {
   private users: Record<string, User | undefined>
@@ -23,6 +24,18 @@ export class DB {
 
   deleteUser(id: string): void {
     this.users[id] = undefined
+  }
+
+  updateUser(id: string, newUserData: UserWithoutID): User | null {
+    const user = this.users[id]
+
+    if (user) {
+      Object.assign(user, newUserData)
+
+      return user
+    }
+
+    return null
   }
 
   clear(): void {
