@@ -4,7 +4,7 @@ import url from 'node:url'
 import { DB } from '../db/data-base'
 import { HTTPMethods } from '../shared/types/http-methods.type'
 import { convertToRouteData } from '../shared/utils/convert-to-route-data.util'
-import { syncSimpleResponseWithRes } from '../shared/utils/sync-simple-reponse-with-res.util'
+import { syncSimpleResponseWithRes } from '../shared/utils/sync-simple-response-with-res.util'
 import { Router } from './router/router'
 
 export class Server {
@@ -22,26 +22,31 @@ export class Server {
 
     this.server.on('request', (req, res) => {
       const { pathname, query } = url.parse(req.url ?? '', true)
-      const routeData = convertToRouteData((req.method as HTTPMethods) ?? 'GET', pathname ?? '', query)
 
-      const endPointHandler = this.router.getHandler(routeData.path)
+      const endPointHandler = this.router.getHandler(pathname ?? '')
 
-      if (!endPointHandler) {
-        res.end('no endpoint handler found ')
-        return
-      }
+      let buff = ''
 
-      const methodHandler = endPointHandler(routeData)
+      req.on('data', data => (buff += data.toString()))
+      req.on('end', () => {
+        const routeData = convertToRouteData((req.method as HTTPMethods) ?? 'GET', pathname ?? '', query, buff)
 
-      if (methodHandler) {
-        const responseData = methodHandler(routeData, this.db)
-        syncSimpleResponseWithRes(responseData, res)
+        if (!endPointHandler) {
+          res.end('no endpoint handler found ')
+          return
+        }
 
-        res.end()
-        return
-      }
+        const methodHandler = endPointHandler(routeData)
 
-      res.end('no method handler was found')
+        if (methodHandler) {
+          const responseData = methodHandler(routeData, this.db)
+          syncSimpleResponseWithRes(responseData, res)
+          res.end()
+          return
+        }
+
+        res.end('no method handler was found')
+      })
     })
   }
   constructor({ port, db }: { port: number; db: DB }) {

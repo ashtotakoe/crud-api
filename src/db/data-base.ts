@@ -12,16 +12,16 @@ export class DB {
     return !users.some(user => user !== undefined) ? (users as User[]) : []
   }
 
-  getUser(key: string): User | null {
-    return this.users[key] ?? null
+  getUser(id: string): User | null {
+    return this.users[id] ?? null
   }
 
-  setUser(key: string, user: User): void {
-    this.users[key] = user
+  setUser(user: User): void {
+    this.users[user.id] = user
   }
 
-  removeItem(key: string): void {
-    this.users[key] = undefined
+  removeItem(id: string): void {
+    this.users[id] = undefined
   }
 
   clear(): void {

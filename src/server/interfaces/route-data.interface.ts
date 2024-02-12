@@ -6,4 +6,5 @@ export interface RouteData {
   path: string
   query: ParsedUrlQuery
   method: HTTPMethods
+  body?: string
 }
