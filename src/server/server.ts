@@ -2,9 +2,11 @@ import http from 'node:http'
 import url from 'node:url'
 
 import { DB } from '../db/data-base'
+import { SimpleResponse } from '../shared/interfaces/simple-response.interface'
 import { HTTPMethods } from '../shared/types/http-methods.type'
 import { convertToRouteData } from '../shared/utils/convert-to-route-data.util'
-import { syncSimpleResponseWithRes } from '../shared/utils/sync-simple-response-with-res.util'
+import { createSimpleResponse } from '../shared/utils/create-simple-response'
+import { writeToResponse } from '../shared/utils/write-to-response.util'
 import { Router } from './router/router'
 
 export class Server {
@@ -21,31 +23,36 @@ export class Server {
     })
 
     this.server.on('request', (req, res) => {
-      const { pathname, query } = url.parse(req.url ?? '', true)
-
-      const endPointHandler = this.router.getHandler(pathname ?? '')
-
+      const pathWasNotFoundResponse = createSimpleResponse({ status: 404, body: 'path was not found' })
       let buff = ''
 
       req.on('data', data => (buff += data.toString()))
       req.on('end', () => {
+        const { pathname, query } = url.parse(req.url ?? '', true)
         const routeData = convertToRouteData((req.method as HTTPMethods) ?? 'GET', pathname ?? '', query, buff)
 
+        const endPointHandler = this.router.getHandler(routeData.path ?? '')
+
         if (!endPointHandler) {
-          res.end('no endpoint handler found ')
+          writeToResponse(pathWasNotFoundResponse, res)
           return
         }
 
         const methodHandler = endPointHandler(routeData)
 
         if (methodHandler) {
-          const responseData = methodHandler(routeData, this.db)
-          syncSimpleResponseWithRes(responseData, res)
-          res.end()
+          let responseData: SimpleResponse
+          try {
+            responseData = methodHandler(routeData, this.db)
+          } catch (error) {
+            writeToResponse(createSimpleResponse({ status: 500, body: 'Internal server error' }), res)
+            return
+          }
+          writeToResponse(responseData, res)
           return
         }
 
-        res.end('no method handler was found')
+        writeToResponse(pathWasNotFoundResponse, res)
       })
     })
   }

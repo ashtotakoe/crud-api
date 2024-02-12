@@ -7,5 +7,5 @@ export const convertToRouteData = (method: HTTPMethods, path: string, query: Par
   method,
   path,
   query,
-  body
+  body,
 })
