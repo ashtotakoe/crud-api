@@ -1,5 +1,5 @@
-import { User } from '../interfaces/user.interface'
-import { generateNewUUID } from './generate-new-uuid.util'
+import { User } from './interfaces/user.interface'
+import { generateNewUUID } from './utils/generate-new-uuid.util'
 
 export const createUser = ({ username, age, hobbies }: Omit<User, 'id'>): User => ({
   username,

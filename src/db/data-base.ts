@@ -1,6 +1,6 @@
 import { User } from '../shared/interfaces/user.interface'
 
-class DB {
+export class DB {
   private users: Record<string, User | undefined>
 
   constructor() {
@@ -27,5 +27,3 @@ class DB {
     return Object.entries(this.users).length
   }
 }
-
-export const db = new DB()
