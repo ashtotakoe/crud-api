@@ -20,7 +20,7 @@ export class DB {
     this.users[user.id] = user
   }
 
-  removeItem(id: string): void {
+  deleteUser(id: string): void {
     this.users[id] = undefined
   }
 
