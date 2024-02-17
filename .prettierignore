@@ -1,0 +1,7 @@
+.hg
+dist
+.git
+.svn
+.github
+node_modules
+documentation
